@@ -4,14 +4,32 @@ using UnityEngine;
 
 public class AsteroidWave : MonoBehaviour
 {
-    public Asteroid prefabAsteroid;
-    public int asteroidAmount = 3;
-    // Start is called before the first frame update
+    public Asteroid asteroidPrefab;//Variável para criar um novo asteroide
+    public float trajectoryVariance = 15.0f ; //angulo limite de variação
+    public float spawnDistance = 15.0f; //Distancia do centro
+    public float spawnRate = 3.0f;//Numero de repetições do spawn
+    public float spawnTime = 4.0f;//Tempo entre repetições
+    public int spawnAmount = 1;//Quantidade de asteroids a serem criados
+    
     void Start()
     {
-        for(int i=0; i < asteroidAmount; i++){
-            Vector3 position = new Vector3(0.0f,0.0f,0.0f);
-            Instantiate(prefabAsteroid, position, Quaternion.identity);
+        InvokeRepeating(nameof(Spawn), this.spawnTime, this.spawnRate);//Vai repetir o metodo de Spawn, a cada "spawnRate" segundos, por "spawnRate" vezes
+    }
+
+    //Fução de spawn dos asteroids
+    private void Spawn()
+    {
+        for(int i = 0; i<this.spawnAmount ; i++){
+           
+            Vector3 spawnDirection = Random.insideUnitCircle.normalized * this.spawnDistance; //Direção de spawn
+            Vector3 spawnPoint = this.transform.position +spawnDirection; //Posição inicial
+
+            float variance = Random.Range(-this.trajectoryVariance,this.trajectoryVariance);//variação do angulo
+            Quaternion rotation = Quaternion.AngleAxis(variance, Vector3.forward); //angulo inicial
+
+            Asteroid asteroid = Instantiate(this.asteroidPrefab, spawnPoint, rotation);//Cria um asteróide
+            asteroid.size = Random.Range(asteroid.minSize, asteroid.maxSize);//Define um tamanho aleatório entre o tamanho máximo e mínimo
+            asteroid.SetTrajectory(rotation * -spawnDirection);//Define a trajetória conforme o angulo inicial, no sentido contrário ao do ponto inicial
         }
     }
 }
