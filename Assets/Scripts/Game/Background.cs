@@ -19,7 +19,5 @@ public class Background : MonoBehaviour
 
         backgroundRigidbody.velocity = speed * parallaxFX;
 
-        Debug.Log(_player.playerRigidbody.position.ToString());
-
     }
 }
